@@ -1,0 +1,26 @@
+[package]
+name = "ldap3_wasm"
+version.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+js-sys = "0.3.64"
+tracing-subscriber = "0.3.17"
+wasm-bindgen = "0.2.87"
+wasm-bindgen-futures = "0.4.37"
+web-sys = "0.3.64"
+ldap3_proto = { workspace = true, features = ["serde"] }
+serde-wasm-bindgen = "0.6.0"
+ws_stream_wasm = "0.7.4"
+async_io_stream = "0.3.3"
