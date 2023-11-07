@@ -23,4 +23,13 @@ web-sys = "0.3.64"
 ldap3_proto = { workspace = true, features = ["serde"] }
 serde-wasm-bindgen = "0.6.0"
 ws_stream_wasm = "0.7.4"
-async_io_stream = "0.3.3"
+async_io_stream = { version = "0.3.3", features = ["tokio", "tokio_io"] }
+framed = "0.4.3"
+# tokio-util = "0.7.10"
+tokio-util = { version = "0.7.10", features = ["codec"] }
+tokio = { workspace = true, features = ["io-util"] }
+futures-util = "0.3.29"
+serde.workspace = true
+wasm-bindgen-test = "0.3.38"
+reqwest = { version = "0.11.22" }
+serde_json.workspace = true
