@@ -1,6 +1,6 @@
-use ldap3_proto::LdapMsg;
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
+
+
+
 use tracing::Level;
 use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
@@ -32,9 +32,9 @@ pub enum LoggingLevel{
     Trace,
 }
 
-impl Into<Level> for LoggingLevel {
-    fn into(self) -> Level {
-        match self {
+impl From<LoggingLevel> for Level {
+    fn from(val: LoggingLevel) -> Self {
+        match val {
             LoggingLevel::Panic => Level::ERROR,
             LoggingLevel::Warn => Level::WARN,
             LoggingLevel::Info => Level::INFO,

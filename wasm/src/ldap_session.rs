@@ -10,7 +10,7 @@ use ldap3_proto::{
     LdapCodec, LdapMsg, LdapSearchScope,
 };
 use tokio_util::codec::Framed;
-use tracing::{debug, info, Level};
+use tracing::{debug, info};
 use wasm_bindgen::prelude::*;
 use ws_stream_wasm::WsStreamIo;
 
@@ -20,14 +20,14 @@ use crate::{to_js_error, JsResult};
 pub struct LdapSession {
     frame: Framed<IoStream<WsStreamIo, Vec<u8>>, LdapCodec>,
     message_id: i32,
-    parameters: LdapSessionParameters,
+    _parameters: LdapSessionParameters,
 }
 
 #[wasm_bindgen]
 pub struct LdapSessionParameters {
     server_address_ws_proxy: String,
-    _kdc_address: Option<String>,
-    _kdc_address_ws_endpoint: Option<String>,
+    _kdc_address: Option<String>, // to be used in the future
+    _kdc_address_ws_endpoint: Option<String>, // to be used in the future
 }
 
 #[wasm_bindgen]
@@ -43,7 +43,7 @@ impl LdapSessionParameters {
 }
 impl LdapSession {
     fn next_message_id(&mut self) -> i32 {
-        self.message_id = self.message_id + 1;
+        self.message_id += 1;
         self.message_id
     }
 }
@@ -53,11 +53,11 @@ pub struct LdapSearchResultStream;
 
 #[wasm_bindgen]
 impl LdapSession {
-    pub async fn connect(parames: LdapSessionParameters) -> JsResult<LdapSession> {
+    pub async fn connect(params: LdapSessionParameters) -> JsResult<LdapSession> {
 
 
         let (_ws_meta, ws_stream_wasm) =
-            ws_stream_wasm::WsMeta::connect(&parames.server_address_ws_proxy, None)
+            ws_stream_wasm::WsMeta::connect(&params.server_address_ws_proxy, None)
                 .await
                 .unwrap();
         let io_stream = ws_stream_wasm.into_io();
@@ -65,7 +65,7 @@ impl LdapSession {
         let session = LdapSession {
             frame: framed,
             message_id: 0,
-            parameters: parames,
+            _parameters: params,
         };
         Ok(session)
     }
@@ -110,7 +110,7 @@ impl LdapSession {
 
         let msg = LdapSearchRequest {
             base: search_base,
-            filter: filter,
+            filter,
             scope: scope.into(),
             attrs: vec![],
             aliases: ldap3_proto::proto::LdapDerefAliases::Never,
@@ -261,9 +261,9 @@ pub enum JsLdapSearchScope {
     Children = 3,
 }
 
-impl Into<LdapSearchScope> for JsLdapSearchScope {
-    fn into(self) -> LdapSearchScope {
-        match self {
+impl From<JsLdapSearchScope> for LdapSearchScope {
+    fn from(val: JsLdapSearchScope) -> Self {
+        match val {
             JsLdapSearchScope::Base => LdapSearchScope::Base,
             JsLdapSearchScope::OneLevel => LdapSearchScope::OneLevel,
             JsLdapSearchScope::Subtree => LdapSearchScope::Subtree,
