@@ -17,12 +17,12 @@ crate-type = ["cdylib", "rlib"]
 console_error_panic_hook = "0.1.7"
 js-sys = "0.3.64"
 tracing-subscriber = "0.3.17"
-wasm-bindgen = "0.2.87"
+wasm-bindgen = {version = "0.2.87", features = ["serde-serialize"]}
 wasm-bindgen-futures = "0.4.37"
 web-sys = "0.3.64"
 ldap3_proto = { workspace = true, features = ["serde"] }
-serde-wasm-bindgen = "0.6.0"
-ws_stream_wasm = "0.7.4"
+serde-wasm-bindgen = "0.6.1"
+ws_stream_wasm = {path = "C:\\Users\\jou\\code\\ws_stream_wasm"}
 async_io_stream = { version = "0.3.3", features = ["tokio", "tokio_io"] }
 framed = "0.4.3"
 # tokio-util = "0.7.10"
@@ -33,3 +33,5 @@ serde.workspace = true
 wasm-bindgen-test = "0.3.38"
 reqwest = { version = "0.11.22" }
 serde_json.workspace = true
+tracing.workspace = true
+tracing-wasm = "0.2.1"

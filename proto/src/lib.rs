@@ -61,6 +61,7 @@ impl Decoder for LdapCodec {
     type Error = io::Error;
 
     fn decode(&mut self, buf: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
+        info!("decode is called, buf size = {}", buf.len());
         // How many bytes to consume?
         let mut parser = Parser::new();
         let (rem, msg) = match parser.parse(buf) {
@@ -93,7 +94,7 @@ impl Decoder for LdapCodec {
         }
         // Build the LdapMsg from the Tag
         LdapMsg::try_from(msg)
-            .map_err(|_| io::Error::new(io::ErrorKind::Other, "ldapmsg invalid"))
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("lber parser: {:?}", e)))
             .map(Some)
     }
 }

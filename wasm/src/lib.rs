@@ -1,62 +1,45 @@
-use ldap3_proto::{proto::LdapControl, LdapMsg};
+use ldap3_proto::LdapMsg;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::Serializer;
-use wasm_bindgen::prelude::wasm_bindgen;
+use serde_json::Value;
+use tracing::Level;
+use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 pub mod error;
 pub mod ldap_session;
 #[cfg(test)]
 mod test;
 
+pub type JsResult<T> = Result<T, JsValue>;
+
+#[wasm_bindgen(start)]
+pub fn start() {
+    console_error_panic_hook::set_once();
+}
+
 #[wasm_bindgen]
-#[derive(Debug, Serialize, Deserialize)]
-pub struct JsLdapMsg(LdapMsg);
+pub fn set_logging_level(level: LoggingLevel) {
+    let mut builder = tracing_wasm::WASMLayerConfigBuilder::new();
+    builder.set_max_level(level.into());
+    tracing_wasm::set_as_global_default_with_config(builder.build());
+}
 
-// impl Serialize for JsLdapMsg {
-//     fn serialize<S>(&self, s: S) -> Result<S::Ok, S::Error>
-//     where
-//         S: serde::Serializer,
-//     {
-//         let ldap_controls = &self.0.ctrl;
-//         let operation = &self.0.op;
-//         let msgid = &self.0.msgid;
+#[wasm_bindgen]
+pub enum LoggingLevel{
+    Panic,
+    Warn,
+    Info,
+    Debug,
+    Trace,
+}
 
-//         todo!()
-//     }
-// }
-// fn serialize_ldapControl<S: serde::Serializer>(
-//     s: &mut S,
-//     ldap_control: &LdapControl,
-// ) -> Result<S::Ok, S::Error> {
-//     match ldap_control {
-//         LdapControl::SyncRequest {
-//             criticality,
-//             mode,
-//             cookie,
-//             reload_hint,
-//         } => todo!(),
-//         LdapControl::SyncState {
-//             state,
-//             entry_uuid,
-//             cookie,
-//         } => todo!(),
-//         LdapControl::SyncDone {
-//             cookie,
-//             refresh_deletes,
-//         } => todo!(),
-//         LdapControl::AdDirsync {
-//             flags,
-//             max_bytes,
-//             cookie,
-//         } => todo!(),
-//         LdapControl::SimplePagedResults { size, cookie } => todo!(),
-//         LdapControl::ManageDsaIT { criticality } => todo!(),
-//     };
-//     todo!()
-// }
-
-impl From<LdapMsg> for JsLdapMsg {
-    fn from(value: LdapMsg) -> Self {
-        Self(value)
+impl Into<Level> for LoggingLevel {
+    fn into(self) -> Level {
+        match self {
+            LoggingLevel::Panic => Level::ERROR,
+            LoggingLevel::Warn => Level::WARN,
+            LoggingLevel::Info => Level::INFO,
+            LoggingLevel::Debug => Level::DEBUG,
+            LoggingLevel::Trace => Level::TRACE,
+        }
     }
 }
